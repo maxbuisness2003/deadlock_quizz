@@ -1,0 +1,21 @@
+# Нормализация переводов строк
+* text=auto eol=lf
+
+*.py    text diff=python
+*.js    text diff=javascript
+*.css   text diff=css
+*.html  text diff=html
+*.md    text
+*.txt   text
+*.json  text
+*.yml   text
+*.yml   text
+
+# бинарные файлы
+*.db    binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.ico   binary
+*.woff  binary

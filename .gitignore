@@ -1,0 +1,28 @@
+# окружение
+.venv/
+venv/
+env/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# данные, которые можно пересоздать скриптом refresh.py
+data/raw/
+data/img_cache/
+data/quiz.db-wal
+data/quiz.db-shm
+
+# окружение и редакторы
+.env
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

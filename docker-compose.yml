@@ -1,0 +1,14 @@
+services:
+  quiz:
+    build: .
+    image: deadlock-quiz
+    container_name: deadlock-quiz
+    ports:
+      - "8001:8001"
+    volumes:
+      # кэш ответов API переживает пересборку контейнера
+      - quiz-cache:/app/data/raw
+    restart: unless-stopped
+
+volumes:
+  quiz-cache:

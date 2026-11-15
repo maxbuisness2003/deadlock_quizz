@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deadlock Quiz — угадай характеристику предмета</title>
+<meta name="description" content="Викторина по предметам Deadlock: угадай, сколько урона даёт Titanic Magazine, сколько он стоит и на каком тире продаётся.">
+<link rel="stylesheet" href="/static/style.css?v={{ static_version }}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ec9719'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='18' font-weight='bold' text-anchor='middle' fill='%2314100a'%3EDL%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+</div>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">DL</span>
+      <div>
+        <h1>Deadlock <em>Quiz</em></h1>
+        <p class="tagline">Угадай характеристику предмета</p>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span class="chip">предметов: <b>{{ items_count }}</b></span>
+      {% if best and best != "0" %}<span class="chip">рекорд: <b>{{ best }}</b></span>{% endif %}
+      {% if last_refresh %}<span class="chip">обновлено: <b>{{ last_refresh }}</b></span>{% endif %}
+    </div>
+  </header>
+
+  <!-- ============================================================= HOME -->
+  <section id="screen-home" class="screen active">
+    <div class="hero">
+      <h2>Угадай предмет<br>по его цифрам</h2>
+      <p>
+        Игра выбирает случайный предмет из магазина Deadlock и просит назвать
+        одно из его чисел: сколько урона даёт <b>Titanic Magazine</b>, сколько
+        стоит Spirit Shroud, на каком тире продаётся Vicious Garlic.
+        За каждый ответ — очки, за скорость — бонус, за серию — множитель.
+      </p>
+      <span class="example">
+        <img src="/img/images/items/weapon/titanic_magazine.png" alt="Titanic Magazine">
+        «Сколько процентов даёт Weapon Damage у Titanic Magazine?» → 14&nbsp;%
+      </span>
+    </div>
+
+    {% if not has_data %}
+    <div class="notice">
+      База предметов ещё не загружена. Выполните в папке проекта:<br>
+      <code>python scripts\refresh.py</code>
+      <br>— скрипт скачает каталог предметов из открытого API Deadlock и заполнит базу.
+    </div>
+    {% else %}
+
+    <div class="panel">
+      <div class="settings-grid">
+        <div>
+          <span class="setting-label">Категория</span>
+          <div class="segmented" id="opt-slot">
+            <button data-value="all" class="active">Все</button>
+            {% for slot in slots %}
+            <button data-value="{{ slot.key }}">{{ slot.label }}</button>
+            {% endfor %}
+          </div>
+        </div>
+        <div>
+          <span class="setting-label">Ответ</span>
+          <div class="segmented" id="opt-mode">
+            <button data-value="buttons" class="active">Кнопки</button>
+            <button data-value="number">Ввод числа</button>
+          </div>
+        </div>
+        <div>
+          <span class="setting-label">Длина раунда</span>
+          <div class="segmented" id="opt-length">
+            <button data-value="10">10</button>
+            <button data-value="15" class="active">15</button>
+            <button data-value="25">25</button>
+            <button data-value="50">50</button>
+          </div>
+        </div>
+      </div>
+
+      <button id="start-btn" class="btn">▶ Начать игру</button>
+      <p class="hint-row" style="justify-content:center;color:var(--muted);font-size:12px;margin-top:14px">
+        На вопрос <b>{{ time_limit | int }}</b> секунд. Успел — получишь бонус за скорость.
+      </p>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- ============================================================= QUIZ -->
+  <section id="screen-quiz" class="screen">
+    <div class="hud">
+      <div class="hud-left">
+        <span class="stat">Вопрос <b id="q-index">1</b>/<b id="q-total">15</b></span>
+        <span class="stat score">Очки <b id="q-score">0</b></span>
+        <span class="stat streak" id="q-streak-stat">Серия <b id="q-streak">0</b><span class="flame" id="q-flame">🔥</span></span>
+        <span class="stat timer" id="q-timer-stat">⏱ <b id="q-timer">25</b> с</span>
+      </div>
+      <div class="progress" id="q-progress"></div>
+    </div>
+
+    <div class="quiz-layout">
+      <aside class="item-column">
+        <div class="item-card">
+          <div class="art"><img id="q-image" src="" alt=""></div>
+          <div>
+            <h3 class="item-name" id="q-item-name">—</h3>
+            <div class="badges" id="q-badges"></div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h4>За что дают очки</h4>
+          <ul>
+            <li><span>Верный ответ</span><b>+100</b></li>
+            <li><span>За скорость</span><b>до +50</b></li>
+            <li><span>Серия ответов</span><b>до +150</b></li>
+            <li><span>Подсказка</span><b class="minus">−30</b></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="question-panel">
+        <div class="timerbar" id="q-timerbar"><i></i></div>
+        <span class="kind-tag" id="q-kind">вопрос</span>
+        <h3 class="question" id="q-prompt">—</h3>
+
+        <div id="q-answers"></div>
+
+        <div class="hint-row">
+          <button class="hint-btn" id="q-hint-btn">💡 Подсказка (−30 очков)</button>
+          <span class="hint-text" id="q-hint-text"></span>
+        </div>
+
+        <div id="q-feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ RESULT -->
+  <section id="screen-result" class="screen">
+    <div class="panel">
+      <div class="result-hero">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 140 140">
+            <defs>
+              <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffb545"/>
+                <stop offset="100%" stop-color="#b96c08"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="70" cy="70" r="60"></circle>
+            <circle class="ring-fg" cx="70" cy="70" r="60" id="r-ring"></circle>
+          </svg>
+          <div class="ring-center">
+            <div class="result-score" id="r-score">0</div>
+            <div class="result-label">очков</div>
+          </div>
+        </div>
+        <div class="result-rank" id="r-rank">—</div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-cell"><b id="r-correct">0</b><span>верных</span></div>
+        <div class="result-cell"><b id="r-accuracy">0%</b><span>точность</span></div>
+        <div class="result-cell"><b id="r-streak">0</b><span>лучшая серия</span></div>
+        <div class="result-cell"><b id="r-time">0</b><span>секунд</span></div>
+      </div>
+
+      <div id="r-mistakes"></div>
+
+      <div class="btn-row">
+        <button class="btn" id="r-again">▶ Ещё раз</button>
+        <button class="btn ghost" id="r-home">⚙ Настройки</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    Данные и картинки — из открытого API сообщества <a href="https://api.deadlock-api.com" target="_blank" rel="noopener">api.deadlock-api.com</a>.<br>
+    Проект не связан с Valve. Deadlock — trademark Valve Corporation.
+  </footer>
+</div>
+
+<script src="/static/app.js?v={{ static_version }}"></script>
+</body>
+</html>
