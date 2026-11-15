@@ -2,19 +2,24 @@
 
     python run.py            # http://127.0.0.1:8001
     python run.py --port 9000
+    python run.py --host 0.0.0.0
+
+On hosting platforms (Render, Hugging Face Spaces, Railway) the port and host
+are taken from the PORT / HOST environment variables.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 
 import uvicorn
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Deadlock Quiz")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8001)
+    parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8001")))
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
 

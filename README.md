@@ -1,3 +1,13 @@
+---
+title: Deadlock Quiz
+emoji: 🎯
+colorFrom: amber
+colorTo: red
+sdk: docker
+app_port: 8001
+pinned: false
+---
+
 <div align="center">
 
 # Deadlock Quiz
@@ -104,6 +114,30 @@ python run.py
 docker compose up -d --build
 # сайт на http://127.0.0.1:8001
 ```
+
+### Опубликовать в интернете
+
+Проект — обычное веб-приложение на FastAPI, поэтому подойдёт любой хостинг.
+Самый быстрый путь — один из двух:
+
+**Render** (бесплатно, без карты) — откройте
+[render.com/deploy](https://render.com/deploy?repo=https://github.com/maxbuisness2003/deadlock_quizz)
+и нажмите **Deploy**. Через пару минут сайт будет доступен по адресу
+`https://deadlock-quiz.onrender.com`.
+
+**Hugging Face Spaces** (бесплатно, без ограничений по времени) — создайте
+[Space](https://huggingface.co/new-space) с типом **Docker**, укажите этот
+репозиторий. Адрес будет вида `https://<ваш-ник>-deadlock-quiz.hf.space`.
+
+Оба варианта берут порт из переменной окружения `PORT` и слушают `0.0.0.0` —
+всё уже настроено в `Dockerfile` и `run.py`.
+
+> На бесплатном тарифе Render сайт «засыпает» после 15 минут без запросов и
+> просыпается за ~30 секунд. Space на Hugging Face не засыпает никогда.
+>
+> Данные лежат в `data/quiz.db` внутри контейнера. Свежий каталог предметов
+> подтягивается автоматически раз в неделю GitHub Actions, а вручную — через
+> `scripts/refresh.py`.
 
 ## Обновление данных
 

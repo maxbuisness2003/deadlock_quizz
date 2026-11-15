@@ -1,0 +1,21 @@
+# Render - бесплатный хостинг для этого проекта.
+# Как задеплоить: откройте репозиторий на GitHub -> кнопка "Deploy to Render"
+# или: https://render.com/deploy?repo=https://github.com/maxbuisness2003/deadlock_quizz
+services:
+  - type: web
+    name: deadlock-quiz
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: DQ_DATA_DIR
+        value: /app/data
+      - key: PORT
+        value: 8001
+    volumeMounts:
+      - mountPath: /app/data/raw
+        name: api-cache
+    disk:
+      name: api-cache
+      mountPath: /app/data/raw
+      sizeGB: 1
