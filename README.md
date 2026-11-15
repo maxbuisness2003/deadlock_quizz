@@ -16,6 +16,8 @@ pinned: false
 
 <sub>«Сколько процентов даёт <b>Weapon Damage</b> у <b>Titanic Magazine</b>?» → <b>14 %</b></sub>
 
+### 🌐 [Открыть сайт → https://deadlock-quiz.onrender.com](https://deadlock-quiz.onrender.com)
+
 [![CI](https://github.com/maxbuisness2003/deadlock_quizz/actions/workflows/ci.yml/badge.svg)](https://github.com/maxbuisness2003/deadlock_quizz/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-3776AB.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)](https://fastapi.tiangolo.com/)
@@ -31,6 +33,8 @@ pinned: false
 Фанатский квиз по игре **Deadlock**: игра выбирает случайный предмет из
 магазина и просит угадать одно из его чисел — сколько урона даёт
 Titanic Magazine, сколько он стоит, на каком тире продаётся.
+
+Живая версия: **https://deadlock-quiz.onrender.com** (хостинг Render, бесплатный тариф).
 
 Всё построено на бесплатном открытом API сообщества
 [`api.deadlock-api.com`](https://api.deadlock-api.com) — ключи не нужны.
